@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Congratulazioni! 🤍</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --lilla-deep: #7B5EA7;
+      --lilla-mid: #9B7EC8;
+      --lilla-light: #C3A8E0;
+      --lilla-pale: #EDE0F7;
+      --lilla-bg: #F5EEFF;
+      --white: #FFFFFF;
+      --text-dark: #3D2B5E;
+      --text-mid: #6B4E8A;
+      --shadow: rgba(123, 94, 167, 0.2);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--lilla-bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ── Particelle confetti ── */
+    #confetti {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 0;
+    }
+    .confetti-piece {
+      position: absolute;
+      animation: confettiFall linear forwards;
+      font-size: 1.4rem;
+      opacity: 0;
+    }
+    @keyframes confettiFall {
+      0%   { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+      80%  { opacity: 1; }
+      100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+    }
+
+    /* ── Cuore pulsante ── */
+    .heart-big {
+      font-size: 5rem;
+      animation: heartbeat 1.4s ease-in-out infinite;
+      margin-bottom: 1.5rem;
+      position: relative; z-index: 1;
+    }
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      14%  { transform: scale(1.18); }
+      28%  { transform: scale(1); }
+      42%  { transform: scale(1.12); }
+      70%  { transform: scale(1); }
+    }
+
+    /* ── Card centrale ── */
+    .premio-card {
+      position: relative; z-index: 1;
+      background: var(--white);
+      border-radius: 28px;
+      padding: 3rem 2.5rem;
+      max-width: 500px;
+      width: calc(100% - 3rem);
+      box-shadow: 0 12px 60px var(--shadow), 0 0 0 2px var(--lilla-pale);
+      text-align: center;
+    }
+
+    .stars-row {
+      font-size: 1.1rem;
+      color: var(--lilla-light);
+      letter-spacing: 0.4em;
+      margin-bottom: 1rem;
+    }
+
+    .eyebrow {
+      font-size: 0.78rem; font-weight: 700; letter-spacing: 0.25em;
+      text-transform: uppercase; color: var(--lilla-mid); margin-bottom: 0.6rem;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 7vw, 3rem);
+      color: var(--text-dark);
+      line-height: 1.15;
+      margin-bottom: 0.5rem;
+    }
+    h1 em { font-style: italic; color: var(--lilla-deep); }
+
+    .divider {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0.6rem; color: var(--lilla-light); font-size: 0.9rem;
+      margin: 1.2rem 0;
+    }
+    .divider::before, .divider::after {
+      content: ''; display: block; flex: 1; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--lilla-light), transparent);
+    }
+
+    .message {
+      font-size: 1.05rem;
+      color: var(--text-mid);
+      line-height: 1.75;
+      margin-bottom: 1.8rem;
+    }
+
+    /* Box regalo */
+    .gift-box {
+      background: linear-gradient(135deg, var(--lilla-pale), #f0e4fa);
+      border-radius: 18px;
+      padding: 1.5rem;
+      margin-bottom: 1.8rem;
+      border: 2px dashed var(--lilla-light);
+    }
+    .gift-box .gift-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .gift-box h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      color: var(--text-dark);
+      margin-bottom: 0.3rem;
+    }
+    .gift-box p {
+      font-size: 0.88rem;
+      color: var(--text-mid);
+      line-height: 1.55;
+    }
+
+    .signature {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.1rem;
+      color: var(--lilla-deep);
+      margin-bottom: 1.5rem;
+    }
+
+    .btn-replay {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: transparent; border: 2px solid var(--lilla-light);
+      border-radius: 999px; padding: 0.65rem 1.5rem;
+      font-family: 'Nunito', sans-serif; font-size: 0.88rem; font-weight: 700;
+      color: var(--lilla-mid); cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+      text-decoration: none;
+    }
+    .btn-replay:hover { background: var(--lilla-pale); border-color: var(--lilla-mid); }
+  </style>
+</head>
+<body>
+
+  <div id="confetti"></div>
+
+  <div class="heart-big">🤍</div>
+
+  <div class="premio-card">
+    <div class="stars-row">★ ♡ ★ ♡ ★</div>
+    <p class="eyebrow">✦ Missione completata ✦</p>
+    <h1>Congratu-<br><em>lazioni!</em></h1>
+    <div class="divider">♡</div>
+
+    <p class="message">
+      Sei arrivata fino in fondo a questa avventura speciale — e questo mi rende così felice. 🤍<br>
+      Hai superato ogni sfida con la tua solita grazia, e ora è arrivato il momento del tuo premio!
+    </p>
+
+    <div class="gift-box">
+      <div class="gift-icon">🎁</div>
+      <h3>Il tuo premio ti aspetta!</h3>
+      <p>
+        <!-- PERSONALIZZA QUESTO MESSAGGIO con un indizio sul regalo reale! -->
+        Vieni da me: ho qualcosa di speciale che ho preparato apposta per te.<br>
+        Non vedo l'ora di vederti! 🤍
+      </p>
+    </div>
+
+    <p class="signature">Con tutto il mio amore, per sempre tuo ♡</p>
+
+    <a class="btn-replay" href="index.html">← Torna all'inizio</a>
+  </div>
+
+  <script>
+    // ── Genera i confetti ──
+    const symbols = ['🤍','⭐','✦','♡','★','✿','🌸','💫'];
+    const container = document.getElementById('confetti');
+
+    function spawnConfetti() {
+      for (let i = 0; i < 40; i++) {
+        const el = document.createElement('div');
+        el.className = 'confetti-piece';
+        el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        el.style.cssText = `
+          left: ${Math.random() * 100}%;
+          font-size: ${0.8 + Math.random() * 1.2}rem;
+          animation-duration: ${3 + Math.random() * 4}s;
+          animation-delay: ${Math.random() * 2}s;
+        `;
+        container.appendChild(el);
+        el.addEventListener('animationend', () => el.remove());
+      }
+    }
+
+    spawnConfetti();
+    // Ripeti ondate di confetti ogni 5 secondi
+    setInterval(spawnConfetti, 5000);
+  </script>
+</body>
+</html>

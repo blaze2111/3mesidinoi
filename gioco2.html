@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gioco 2 — Il Nostro Puzzle 🤍</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --lilla-deep: #7B5EA7;
+      --lilla-mid: #9B7EC8;
+      --lilla-light: #C3A8E0;
+      --lilla-pale: #EDE0F7;
+      --lilla-bg: #F5EEFF;
+      --white: #FFFFFF;
+      --text-dark: #3D2B5E;
+      --text-mid: #6B4E8A;
+      --shadow: rgba(123, 94, 167, 0.2);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Nunito', sans-serif; background: var(--lilla-bg); min-height: 100vh; }
+
+    nav {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 1.2rem 2rem; background: var(--white);
+      box-shadow: 0 2px 16px var(--shadow);
+    }
+    nav a { font-size: 0.85rem; color: var(--lilla-mid); text-decoration: none; font-weight: 600; }
+    nav a:hover { color: var(--lilla-deep); }
+    .nav-badge {
+      background: linear-gradient(135deg, var(--lilla-mid), var(--lilla-deep));
+      color: white; border-radius: 999px; padding: 0.2rem 0.8rem;
+      font-size: 0.75rem; font-weight: 700;
+    }
+
+    .game-header { text-align: center; padding: 2rem 1.5rem 1rem; }
+    .game-header .eyebrow { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--lilla-mid); margin-bottom: 0.5rem; }
+    .game-header h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem,5vw,2.8rem); color: var(--text-dark); }
+    .game-header h1 em { font-style: italic; color: var(--lilla-deep); }
+    .game-header p { margin-top: 0.6rem; font-size: 0.92rem; color: var(--text-mid); line-height: 1.6; }
+
+    /* ── Info bar ── */
+    .info-bar {
+      display: flex; justify-content: space-between; align-items: center;
+      background: var(--white); border-radius: 14px; padding: 0.7rem 1.4rem;
+      margin: 0 auto 1rem; max-width: 520px; width: calc(100% - 3rem);
+      box-shadow: 0 2px 12px var(--shadow);
+    }
+    .info-item { text-align: center; }
+    .info-item .val { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--lilla-deep); }
+    .info-item .lbl { font-size: 0.68rem; color: var(--text-mid); font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
+
+    /* ── Area puzzle ── */
+    .puzzle-area {
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    /* Canvas container */
+    .canvas-wrap {
+      background: var(--white);
+      border-radius: 20px;
+      box-shadow: 0 4px 28px var(--shadow);
+      border: 2px solid var(--lilla-pale);
+      overflow: hidden;
+      position: relative;
+      touch-action: none;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      cursor: grab;
+    }
+    canvas:active { cursor: grabbing; }
+
+    /* ── Anteprima ── */
+    .preview-toggle {
+      text-align: center;
+      margin: 0.8rem 0;
+    }
+    .preview-panel {
+      display: none;
+      background: var(--white);
+      border-radius: 14px;
+      padding: 0.8rem;
+      box-shadow: 0 2px 12px var(--shadow);
+      margin-bottom: 0.8rem;
+      text-align: center;
+    }
+    .preview-panel.show { display: block; }
+    .preview-panel p { font-size: 0.78rem; color: var(--text-mid); margin-bottom: 0.5rem; }
+    .preview-panel img {
+      max-width: 140px;
+      border-radius: 8px;
+      border: 2px solid var(--lilla-pale);
+    }
+
+    /* ── Bottoni ── */
+    .puzzle-actions {
+      display: flex; gap: 0.7rem; justify-content: center; margin: 0.8rem 0 1.5rem;
+      flex-wrap: wrap;
+    }
+    .btn-secondary {
+      background: var(--white); border: 2px solid var(--lilla-light);
+      border-radius: 999px; padding: 0.6rem 1.3rem;
+      font-family: 'Nunito', sans-serif; font-size: 0.88rem; font-weight: 700;
+      color: var(--lilla-deep); cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .btn-secondary:hover { background: var(--lilla-pale); border-color: var(--lilla-mid); }
+
+    /* ── Completamento ── */
+    .complete-section { max-width: 520px; margin: 0 auto 3rem; padding: 0 1.5rem; }
+    .complete-box {
+      background: var(--white); border-radius: 20px; padding: 2rem;
+      box-shadow: 0 4px 24px var(--shadow); border: 2px solid var(--lilla-pale);
+      text-align: center; display: none;
+    }
+    .complete-box.show { display: block; }
+    .complete-box h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--text-dark); margin-bottom: 0.5rem; }
+    .complete-box p { font-size: 0.9rem; color: var(--text-mid); margin-bottom: 1.4rem; line-height: 1.6; }
+    .confetti-row { font-size: 1.8rem; margin-bottom: 0.8rem; letter-spacing: 0.3em; }
+    .btn-complete {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: linear-gradient(135deg, var(--lilla-mid), var(--lilla-deep));
+      color: white; border: none; border-radius: 999px;
+      padding: 0.85rem 2rem; font-family: 'Nunito', sans-serif;
+      font-size: 1rem; font-weight: 700; cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 16px rgba(123,94,167,0.35);
+    }
+    .btn-complete:hover { transform: translateY(-2px); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html">← Torna alla mappa</a>
+  <span style="flex:1"></span>
+  <span class="nav-badge">🧩 Gioco 2 di 4</span>
+</nav>
+
+<div class="game-header">
+  <p class="eyebrow">✦ Gioco 2 ✦</p>
+  <h1>Il Nostro<br><em>Puzzle</em></h1>
+  <p>Ricomponi la nostra foto! Trascina i pezzi al posto giusto 🤍<br>I pezzi scattano in posizione quando sono vicini.</p>
+</div>
+
+<div class="info-bar">
+  <div class="info-item">
+    <div class="val" id="placedCount">0/36</div>
+    <div class="lbl">Pezzi</div>
+  </div>
+  <div class="info-item">
+    <div class="val" id="timer">0:00</div>
+    <div class="lbl">Tempo</div>
+  </div>
+  <div class="info-item">
+    <div class="val" id="statusIcon">🧩</div>
+    <div class="lbl">Stato</div>
+  </div>
+</div>
+
+<div class="puzzle-area">
+  <div class="canvas-wrap">
+    <canvas id="puzzleCanvas"></canvas>
+  </div>
+
+  <div class="preview-toggle">
+    <button class="btn-secondary" onclick="togglePreview()">👁 Vedi foto originale</button>
+  </div>
+  <div class="preview-panel" id="previewPanel">
+    <p>Foto da ricomporre:</p>
+    <img id="previewImg" src="" alt="Anteprima">
+  </div>
+
+  <div class="puzzle-actions">
+    <button class="btn-secondary" onclick="shufflePuzzle()">🔀 Rimescola</button>
+  </div>
+</div>
+
+<div class="complete-section">
+  <div class="complete-box" id="completeBox">
+    <div class="confetti-row">🌟🤍🎉</div>
+    <h2>Puzzle completato!</h2>
+    <p>Bravissima! Hai ricomposto il nostro ricordo speciale 🤍<br>Torna alla mappa: ti darò la seconda cifra del codice!</p>
+    <button class="btn-complete" onclick="markDone()">Torna alla mappa 🤍</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+//  PERSONALIZZAZIONE
+//  Metti la tua foto nella stessa cartella dell'HTML
+//  e scrivi qui il nome del file (es. "foto.png")
+// ══════════════════════════════════════════════════════════
+const IMAGE_SRC = 'noi.jpeg'; // ← CAMBIA QUI con il nome della tua foto
+const COLS = 6;
+const ROWS = 6;
+const SNAP_DIST = 18; // distanza in px entro cui scatta il pezzo
+// ══════════════════════════════════════════
+const canvas = document.getElementById('puzzleCanvas');
+const ctx = canvas.getContext('2d');
+const img = new Image();
+
+let pieces = [];
+let dragging = null;
+let dragOffX = 0, dragOffY = 0;
+let placed = 0;
+let seconds = 0;
+let timerInterval = null;
+let started = false;
+let pieceW, pieceH;
+let canvasW, canvasH;
+let TAB = 0; // dimensione "orecchietta" del puzzle
+
+img.onload = () => {
+  document.getElementById('previewImg').src = IMAGE_SRC;
+  initPuzzle();
+};
+img.onerror = () => {
+  // Fallback: disegna un gradiente lilla se la foto non c'è
+  const offscreen = document.createElement('canvas');
+  offscreen.width = 600; offscreen.height = 600;
+  const oc = offscreen.getContext('2d');
+  const grad = oc.createLinearGradient(0,0,600,600);
+  grad.addColorStop(0,'#C3A8E0');
+  grad.addColorStop(1,'#7B5EA7');
+  oc.fillStyle = grad;
+  oc.fillRect(0,0,600,600);
+  oc.fillStyle = 'white';
+  oc.font = 'bold 28px Nunito, sans-serif';
+  oc.textAlign = 'center';
+  oc.fillText('Metti qui la tua foto!', 300, 280);
+  oc.font = '18px Nunito, sans-serif';
+  oc.fillText('(rinomina il file in foto.jpg)', 300, 320);
+  img.src = offscreen.toDataURL();
+};
+img.src = IMAGE_SRC;
+
+function initPuzzle() {
+  // Calcola dimensioni responsive
+  const maxW = Math.min(canvas.parentElement.clientWidth, 540);
+  canvasW = maxW;
+  canvasH = maxW; // quadrato
+  canvas.width = canvasW;
+  canvas.height = canvasH;
+
+  pieceW = Math.floor(canvasW / COLS);
+  pieceH = Math.floor(canvasH / ROWS);
+  TAB = Math.floor(Math.min(pieceW, pieceH) * 0.28);
+  pieceCache.clear();
+
+  pieces = [];
+  placed = 0;
+  seconds = 0; started = false;
+  clearInterval(timerInterval);
+  document.getElementById('placedCount').textContent = '0/' + (COLS*ROWS);
+  document.getElementById('timer').textContent = '0:00';
+  document.getElementById('statusIcon').textContent = '🧩';
+  document.getElementById('completeBox').classList.remove('show');
+
+  // Crea i pezzi
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      // Connectors: 1 = tab uscente, -1 = tab rientrante, 0 = bordo piatto
+      const top    = r === 0        ? 0 : pieces[(r-1)*COLS + c].bottom * -1;
+      const left   = c === 0        ? 0 : pieces[r*COLS + (c-1)].right  * -1;
+      const bottom = r === ROWS - 1 ? 0 : (Math.random() > 0.5 ? 1 : -1);
+      const right  = c === COLS - 1 ? 0 : (Math.random() > 0.5 ? 1 : -1);
+
+      pieces.push({
+        id: r * COLS + c,
+        col: c, row: r,
+        // posizione corrente (random sullo schermo)
+        x: Math.random() * (canvasW - pieceW - TAB*2) + TAB,
+        y: Math.random() * (canvasH - pieceH - TAB*2) + TAB,
+        // posizione target
+        targetX: c * pieceW,
+        targetY: r * pieceH,
+        top, right, bottom, left,
+        snapped: false
+      });
+    }
+  }
+
+  // Mescola le posizioni
+  shufflePositions();
+  draw();
+}
+
+function shufflePositions() {
+  // Disponi i pezzi in modo che non siano sovrapposti — griglia casuale
+  const slots = [];
+  const cols2 = COLS + 1, rows2 = ROWS + 1;
+  for (let r = 0; r < rows2; r++)
+    for (let c = 0; c < cols2; c++)
+      slots.push({ x: c * (canvasW / cols2), y: r * (canvasH / rows2) });
+
+  // Shuffle slots
+  for (let i = slots.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [slots[i], slots[j]] = [slots[j], slots[i]];
+  }
+
+  pieces.forEach((p, i) => {
+    if (!p.snapped) {
+      const s = slots[i % slots.length];
+      p.x = Math.max(TAB, Math.min(canvasW - pieceW - TAB, s.x + (Math.random()-0.5)*20));
+      p.y = Math.max(TAB, Math.min(canvasH - pieceH - TAB, s.y + (Math.random()-0.5)*20));
+    }
+  });
+}
+
+// ── Disegno ──
+function draw() {
+  ctx.clearRect(0, 0, canvasW, canvasH);
+
+  // Griglia guida (posizioni target) — molto leggera
+  ctx.save();
+  ctx.strokeStyle = 'rgba(155,126,200,0.15)';
+  ctx.lineWidth = 1;
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      ctx.strokeRect(c*pieceW, r*pieceH, pieceW, pieceH);
+    }
+  }
+  ctx.restore();
+
+  // Disegna prima i pezzi NON trascinati, poi quello trascinato sopra
+  const order = [...pieces].sort((a,b) => (a === dragging ? 1 : b === dragging ? -1 : 0));
+  order.forEach(p => drawPiece(p));
+}
+
+// Cache degli offscreen canvas per ogni pezzo
+const pieceCache = new Map();
+
+function getPieceCanvas(p) {
+  const key = p.id;
+  if (pieceCache.has(key)) return pieceCache.get(key);
+
+  // Dimensione dell'offscreen: pezzo + TAB su tutti i lati
+  const size = Math.max(pieceW, pieceH) + TAB * 2;
+  const oc = document.createElement('canvas');
+  oc.width  = pieceW + TAB * 2;
+  oc.height = pieceH + TAB * 2;
+  const oc2 = oc.getContext('2d');
+
+  // 1. Disegna la porzione di immagine (riempie tutto l'offscreen)
+  const sx = p.col * (img.naturalWidth  / COLS);
+  const sy = p.row * (img.naturalHeight / ROWS);
+  const sw = img.naturalWidth  / COLS;
+  const sh = img.naturalHeight / ROWS;
+  oc2.drawImage(img, sx, sy, sw, sh, 0, 0, pieceW + TAB*2, pieceH + TAB*2);
+
+  // 2. Taglia con destination-in: tieni solo i pixel dentro la sagoma
+  oc2.globalCompositeOperation = 'destination-in';
+  buildPath(oc2, p, TAB, TAB); // offset TAB perché l'origine è al margine
+  oc2.fill();
+
+  // 3. Disegna il bordo sopra
+  oc2.globalCompositeOperation = 'source-over';
+  oc2.strokeStyle = 'rgba(123,94,167,0.5)';
+  oc2.lineWidth = 1.5;
+  buildPath(oc2, p, TAB, TAB);
+  oc2.stroke();
+
+  pieceCache.set(key, oc);
+  return oc;
+}
+
+function drawPiece(p) {
+  const oc = getPieceCanvas(p);
+
+  ctx.save();
+  if (p === dragging) {
+    ctx.shadowColor = 'rgba(123,94,167,0.5)';
+    ctx.shadowBlur = 16;
+  }
+  // Disegna l'offscreen shiftato di -TAB,-TAB rispetto alla posizione del pezzo
+  ctx.drawImage(oc, p.x - TAB, p.y - TAB);
+
+  // Bordo evidenziato se trascinato
+  if (p === dragging) {
+    ctx.restore();
+    ctx.save();
+    ctx.strokeStyle = 'rgba(123,94,167,0.95)';
+    ctx.lineWidth = 2;
+    buildPath(ctx, p, p.x, p.y);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+// Costruisce il path della sagoma puzzle
+// ox, oy = offset: punto in cui si trova l'angolo top-left del pezzo
+function buildPath(c, p, ox, oy) {
+  const w = pieceW, h = pieceH, t = TAB;
+  c.beginPath();
+  c.moveTo(ox, oy);
+  // TOP
+  edgePath(c, ox, oy, ox+w, oy, p.top, 'h');
+  // RIGHT
+  edgePath(c, ox+w, oy, ox+w, oy+h, p.right, 'v');
+  // BOTTOM (percorso inverso → moltiplica dir per -1)
+  edgePath(c, ox+w, oy+h, ox, oy+h, -p.bottom, 'h');
+  // LEFT (percorso inverso)
+  edgePath(c, ox, oy+h, ox, oy, -p.left, 'v');
+  c.closePath();
+}
+
+// Disegna un lato con eventuale tab/incavo tramite bezier
+// dir: +1 tab uscente verso l'esterno, -1 incavo verso l'interno, 0 piatto
+function edgePath(c, x1, y1, x2, y2, dir, axis) {
+  if (dir === 0) { c.lineTo(x2, y2); return; }
+
+  const t = TAB * dir; // positivo = esce dal rettangolo del pezzo
+
+  if (axis === 'h') {
+    // Lato orizzontale: tab esce in direzione -Y (sopra) o +Y (sotto)
+    // dipende dal segno di t
+    const mx = (x1 + x2) / 2;
+    c.lineTo(mx - TAB * 0.5, y1);
+    c.bezierCurveTo(
+      mx - TAB * 0.5, y1 - t * 0.6,
+      mx - TAB * 0.25, y1 - t,
+      mx,              y1 - t
+    );
+    c.bezierCurveTo(
+      mx + TAB * 0.25, y1 - t,
+      mx + TAB * 0.5,  y1 - t * 0.6,
+      mx + TAB * 0.5,  y1
+    );
+    c.lineTo(x2, y2);
+  } else {
+    // Lato verticale: tab esce in direzione -X (sinistra) o +X (destra)
+    const my = (y1 + y2) / 2;
+    c.lineTo(x2, my - TAB * 0.5);
+    c.bezierCurveTo(
+      x2 - t * 0.6,  my - TAB * 0.5,
+      x2 - t,        my - TAB * 0.25,
+      x2 - t,        my
+    );
+    c.bezierCurveTo(
+      x2 - t,        my + TAB * 0.25,
+      x2 - t * 0.6,  my + TAB * 0.5,
+      x2,            my + TAB * 0.5
+    );
+    c.lineTo(x2, y2);
+  }
+}
+
+// ── Interazione mouse / touch ──
+function getPos(e) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width  / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const src = e.touches ? e.touches[0] : e;
+  return {
+    x: (src.clientX - rect.left) * scaleX,
+    y: (src.clientY - rect.top)  * scaleY
+  };
+}
+
+function onDown(e) {
+  e.preventDefault();
+  const {x, y} = getPos(e);
+  // Cerca il pezzo in cima (ordine inverso per prendere quello sopra)
+  for (let i = pieces.length - 1; i >= 0; i--) {
+    const p = pieces[i];
+    if (p.snapped) continue;
+    if (x >= p.x && x <= p.x + pieceW && y >= p.y && y <= p.y + pieceH) {
+      dragging = p;
+      dragOffX = x - p.x;
+      dragOffY = y - p.y;
+      // Porta il pezzo in cima alla lista
+      pieces.splice(i, 1);
+      pieces.push(dragging);
+      if (!started) { startTimer(); started = true; }
+      draw();
+      return;
+    }
+  }
+}
+
+function onMove(e) {
+  e.preventDefault();
+  if (!dragging) return;
+  const {x, y} = getPos(e);
+  dragging.x = x - dragOffX;
+  dragging.y = y - dragOffY;
+  draw();
+}
+
+function onUp(e) {
+  if (!dragging) return;
+  // Controlla snap
+  const tx = dragging.targetX;
+  const ty = dragging.targetY;
+  const dist = Math.hypot(dragging.x - tx, dragging.y - ty);
+  if (dist < SNAP_DIST + pieceW * 0.3) {
+    dragging.x = tx;
+    dragging.y = ty;
+    if (!dragging.snapped) {
+      dragging.snapped = true;
+      placed++;
+      document.getElementById('placedCount').textContent = placed + '/' + (COLS*ROWS);
+      if (placed === COLS * ROWS) handleWin();
+    }
+  }
+  dragging = null;
+  draw();
+}
+
+canvas.addEventListener('mousedown',  onDown);
+canvas.addEventListener('mousemove',  onMove);
+canvas.addEventListener('mouseup',    onUp);
+canvas.addEventListener('touchstart', onDown, { passive: false });
+canvas.addEventListener('touchmove',  onMove, { passive: false });
+canvas.addEventListener('touchend',   onUp,   { passive: false });
+
+// ── Timer ──
+function startTimer() {
+  timerInterval = setInterval(() => {
+    seconds++;
+    const m = Math.floor(seconds/60), s = seconds%60;
+    document.getElementById('timer').textContent = m+':'+(s<10?'0':'')+s;
+  }, 1000);
+}
+
+// ── Win ──
+function handleWin() {
+  clearInterval(timerInterval);
+  document.getElementById('statusIcon').textContent = '🎉';
+  localStorage.setItem('game2_done', 'true');
+  setTimeout(() => {
+    document.getElementById('completeBox').classList.add('show');
+    document.getElementById('completeBox').scrollIntoView({ behavior: 'smooth' });
+  }, 500);
+}
+
+function markDone() {
+  localStorage.setItem('game2_done', 'true');
+  window.location.href = 'index.html';
+}
+
+function shufflePuzzle() {
+  pieceCache.clear();
+  pieces.forEach(p => { p.snapped = false; });
+  placed = 0; seconds = 0; started = false;
+  clearInterval(timerInterval);
+  document.getElementById('placedCount').textContent = '0/' + (COLS*ROWS);
+  document.getElementById('timer').textContent = '0:00';
+  document.getElementById('statusIcon').textContent = '🧩';
+  document.getElementById('completeBox').classList.remove('show');
+  shufflePositions();
+  draw();
+}
+
+function togglePreview() {
+  document.getElementById('previewPanel').classList.toggle('show');
+}
+
+// Ridimensiona al resize finestra
+window.addEventListener('resize', () => {
+  if (img.complete && img.naturalWidth > 0) initPuzzle();
+});
+
+// Se già completato
+if (localStorage.getItem('game2_done') === 'true') {
+  document.getElementById('completeBox').classList.add('show');
+}
+</script>
+</body>
+</html>

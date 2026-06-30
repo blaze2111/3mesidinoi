@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gioco 1 — Cruciverba del Cuore 🤍</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --lilla-deep: #7B5EA7;
+      --lilla-mid: #9B7EC8;
+      --lilla-light: #C3A8E0;
+      --lilla-pale: #EDE0F7;
+      --lilla-bg: #F5EEFF;
+      --white: #FFFFFF;
+      --text-dark: #3D2B5E;
+      --text-mid: #6B4E8A;
+      --shadow: rgba(123, 94, 167, 0.2);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Nunito', sans-serif; background: var(--lilla-bg); min-height: 100vh; }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.2rem 2rem;
+      background: var(--white);
+      box-shadow: 0 2px 16px var(--shadow);
+    }
+    nav a {
+      font-size: 0.85rem;
+      color: var(--lilla-mid);
+      text-decoration: none;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    nav a:hover { color: var(--lilla-deep); }
+    .nav-badge {
+      background: linear-gradient(135deg, var(--lilla-mid), var(--lilla-deep));
+      color: white;
+      border-radius: 999px;
+      padding: 0.2rem 0.8rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .game-header {
+      text-align: center;
+      padding: 2.5rem 1.5rem 1.5rem;
+    }
+    .game-header .eyebrow {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--lilla-mid);
+      margin-bottom: 0.5rem;
+    }
+    .game-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      color: var(--text-dark);
+    }
+    .game-header h1 em { font-style: italic; color: var(--lilla-deep); }
+    .game-header p {
+      margin-top: 0.6rem;
+      font-size: 0.95rem;
+      color: var(--text-mid);
+      line-height: 1.6;
+    }
+
+    .iframe-container {
+      max-width: 900px;
+      margin: 0 auto 1.5rem;
+      padding: 0 1.5rem;
+    }
+    .iframe-wrapper {
+      background: var(--white);
+      border-radius: 20px;
+      box-shadow: 0 4px 28px var(--shadow);
+      overflow: hidden;
+      border: 2px solid var(--lilla-pale);
+    }
+    .iframe-wrapper iframe {
+      width: 100%;
+      height: 1000px;
+      border: none;
+      display: block;
+    }
+
+    /* Placeholder per il cruciverba */
+    .crossword-placeholder {
+      width: 100%;
+      height: 600px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      background: linear-gradient(135deg, var(--lilla-pale), var(--white));
+      color: var(--text-mid);
+      font-size: 1rem;
+      text-align: center;
+      padding: 2rem;
+    }
+    .crossword-placeholder .big-icon { font-size: 3.5rem; }
+    .crossword-placeholder strong {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      color: var(--text-dark);
+    }
+    .crossword-placeholder code {
+      background: var(--lilla-pale);
+      padding: 0.3rem 0.8rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      color: var(--lilla-deep);
+      font-family: monospace;
+    }
+
+    .complete-section {
+      max-width: 560px;
+      margin: 0 auto 3rem;
+      padding: 0 1.5rem;
+    }
+    .complete-box {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 4px 24px var(--shadow);
+      border: 2px solid var(--lilla-pale);
+      text-align: center;
+    }
+    .complete-box h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
+      color: var(--text-dark);
+      margin-bottom: 0.5rem;
+    }
+    .complete-box p {
+      font-size: 0.9rem;
+      color: var(--text-mid);
+      margin-bottom: 1.4rem;
+      line-height: 1.6;
+    }
+    .btn-complete {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, var(--lilla-mid), var(--lilla-deep));
+      color: white;
+      border: none;
+      border-radius: 999px;
+      padding: 0.85rem 2rem;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 16px rgba(123,94,167,0.35);
+    }
+    .btn-complete:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(123,94,167,0.45); }
+
+    .success-msg {
+      display: none;
+      margin-top: 1.2rem;
+      padding: 1rem 1.5rem;
+      background: var(--lilla-pale);
+      border-radius: 12px;
+      color: var(--lilla-deep);
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+    .success-msg.show { display: block; }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html">← Torna alla mappa</a>
+    <span style="flex:1"></span>
+    <span class="nav-badge">📝 Gioco 1 di 4</span>
+  </nav>
+
+  <div class="game-header">
+    <p class="eyebrow">✦ Gioco 1 ✦</p>
+    <h1>Cruciverba<br><em>del Cuore</em></h1>
+    <p>Risolvi il cruciverba che ho preparato apposta per te 🤍<br>Quando hai finito, torna qui e segna il completamento!</p>
+  </div>
+
+  <div class="iframe-container">
+    <div class="iframe-wrapper">
+      <!--
+        ╔══════════════════════════════════════════════════════════════╗
+        ║  ISTRUZIONI PER IL CRUCIVERBA                                ║
+        ║  Sostituisci il div .crossword-placeholder con:              ║
+        ║  <iframe src="URL_DEL_TUO_CRUCIVERBA" ...></iframe>          ║
+        ╚══════════════════════════════════════════════════════════════╝
+      -->
+      <iframe width="1200" height="1200" style="border:3px solid black; margin:auto; display:block" frameborder="0" src="https://crosswordlabs.com/embed/ti-amo-45"></iframe>
+    </div>
+  </div>
+
+  <div class="complete-section">
+    <div class="complete-box">
+      <h2>🏆 Hai risolto il cruciverba?</h2>
+      <p>Ottimo lavoro! Clicca qui sotto per segnare questo gioco come completato. Poi torna alla mappa: ti darò la prima cifra del codice! 🤍</p>
+      <button class="btn-complete" onclick="markDone()">
+        <span>✓ Ho finito!</span>
+      </button>
+      <div class="success-msg" id="successMsg">
+        🌟 Bravissima! La prima cifra del codice è tua.<br>Torna alla mappa per continuare!
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function markDone() {
+      localStorage.setItem('game1_done', 'true');
+      document.getElementById('successMsg').classList.add('show');
+      setTimeout(() => window.location.href = 'index.html', 2200);
+    }
+    // Se già completato, mostra subito il successo
+    if (localStorage.getItem('game1_done') === 'true') {
+      document.querySelector('.btn-complete').textContent = '✓ Già completato!';
+      document.querySelector('.btn-complete').disabled = true;
+    }
+  </script>
+</body>
+</html>

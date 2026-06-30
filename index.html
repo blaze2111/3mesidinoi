@@ -1,15 +1,503 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Andrea Lattanzi</title>
-        <link rel="icon" type="imahe/x-icon" href="Logo AL.png">
-        <frameset rows="*10%,90%">
-            <frame name="up" src="header.html" frameborder="0" noresize>
-            <frame name="down" src="Home.html" frameborder="0" noresize>
-        </frameset>
-        
-    </head>
-    
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Il Tuo Viaggio Speciale 🤍</title>
+  <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🤍</text></svg>'>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --lilla-deep: #7B5EA7;
+      --lilla-mid: #9B7EC8;
+      --lilla-light: #C3A8E0;
+      --lilla-pale: #EDE0F7;
+      --lilla-bg: #F5EEFF;
+      --white: #FFFFFF;
+      --text-dark: #3D2B5E;
+      --text-mid: #6B4E8A;
+      --gold: #D4AF6A;
+      --shadow: rgba(123, 94, 167, 0.2);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--lilla-bg);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* ── Particelle animate ── */
+    #particles {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .particle {
+      position: absolute;
+      animation: floatUp linear infinite;
+      opacity: 0;
+      font-size: 1.2rem;
+      user-select: none;
+    }
+    @keyframes floatUp {
+      0%   { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10%  { opacity: 0.8; }
+      90%  { opacity: 0.6; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* ── Header ── */
+    header {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 3.5rem 1.5rem 2rem;
+    }
+    .title-eyebrow {
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--lilla-mid);
+      margin-bottom: 0.6rem;
+    }
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.2rem, 6vw, 3.6rem);
+      color: var(--text-dark);
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+    h1 em {
+      font-style: italic;
+      color: var(--lilla-deep);
+    }
+    .subtitle {
+      font-size: 1.05rem;
+      color: var(--text-mid);
+      max-width: 480px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+    .heart-divider {
+      margin: 1.6rem auto 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      color: var(--lilla-light);
+      font-size: 1rem;
+    }
+    .heart-divider::before,
+    .heart-divider::after {
+      content: '';
+      display: block;
+      width: 60px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--lilla-light));
+    }
+    .heart-divider::after { background: linear-gradient(90deg, var(--lilla-light), transparent); }
+
+    /* ── Progress bar ── */
+    .progress-section {
+      position: relative;
+      z-index: 1;
+      max-width: 520px;
+      margin: 0 auto 2rem;
+      padding: 0 1.5rem;
+      text-align: center;
+    }
+    .progress-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--lilla-mid);
+      margin-bottom: 0.5rem;
+    }
+    .progress-track {
+      background: var(--lilla-light);
+      border-radius: 999px;
+      height: 8px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--lilla-mid), var(--lilla-deep));
+      border-radius: 999px;
+      transition: width 0.6s ease;
+    }
+
+    /* ── Cards griglia ── */
+    .games-section {
+      position: relative;
+      z-index: 1;
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 0 1.5rem 3rem;
+    }
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 1.4rem;
+    }
+    .game-card {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 2rem 1.4rem 1.6rem;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      box-shadow: 0 4px 24px var(--shadow);
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.8rem;
+      border: 2px solid transparent;
+      position: relative;
+      overflow: hidden;
+    }
+    .game-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--lilla-mid), var(--lilla-deep));
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+    .game-card:hover::before { transform: scaleX(1); }
+    .game-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 36px var(--shadow);
+      border-color: var(--lilla-light);
+    }
+    .game-card.completed {
+      border-color: var(--lilla-mid);
+      background: linear-gradient(135deg, #fff 60%, var(--lilla-pale));
+    }
+    .game-card.completed::before { transform: scaleX(1); }
+    .card-icon {
+      font-size: 2.4rem;
+      line-height: 1;
+    }
+    .card-number {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--lilla-light);
+    }
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      color: var(--text-dark);
+      font-weight: 700;
+    }
+    .card-desc {
+      font-size: 0.82rem;
+      color: var(--text-mid);
+      line-height: 1.5;
+    }
+    .card-status {
+      margin-top: 0.4rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.25rem 0.8rem;
+      border-radius: 999px;
+      background: var(--lilla-pale);
+      color: var(--lilla-mid);
+    }
+    .game-card.completed .card-status {
+      background: var(--lilla-mid);
+      color: var(--white);
+    }
+    .card-lock {
+      font-size: 1.1rem;
+      opacity: 0.4;
+    }
+
+    /* ── Sezione codice segreto ── */
+    .code-section {
+      position: relative;
+      z-index: 1;
+      max-width: 520px;
+      margin: 0 auto 4rem;
+      padding: 0 1.5rem;
+    }
+    .code-box {
+      background: var(--white);
+      border-radius: 24px;
+      padding: 2.2rem 2rem;
+      box-shadow: 0 4px 32px var(--shadow);
+      text-align: center;
+      border: 2px solid var(--lilla-pale);
+    }
+    .code-box h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: var(--text-dark);
+      margin-bottom: 0.4rem;
+    }
+    .code-box p {
+      font-size: 0.88rem;
+      color: var(--text-mid);
+      margin-bottom: 1.6rem;
+      line-height: 1.6;
+    }
+    .code-inputs {
+      display: flex;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-bottom: 1.4rem;
+      flex-wrap: wrap;
+    }
+    .code-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .code-group label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--lilla-light);
+    }
+    .code-inputs input {
+      width: 56px;
+      height: 64px;
+      border-radius: 14px;
+      border: 2px solid var(--lilla-light);
+      background: var(--lilla-bg);
+      text-align: center;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .code-inputs input:focus {
+      border-color: var(--lilla-deep);
+      box-shadow: 0 0 0 3px rgba(123,94,167,0.15);
+    }
+    .code-inputs input::placeholder { color: var(--lilla-light); }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, var(--lilla-mid), var(--lilla-deep));
+      color: var(--white);
+      border: none;
+      border-radius: 999px;
+      padding: 0.85rem 2.2rem;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 16px rgba(123,94,167,0.35);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(123,94,167,0.45);
+    }
+    .code-hint {
+      margin-top: 1rem;
+      font-size: 0.78rem;
+      color: var(--lilla-light);
+    }
+    .code-error {
+      color: #c0392b;
+      font-size: 0.88rem;
+      margin-top: 0.8rem;
+      display: none;
+    }
+    .code-error.show { display: block; }
+
+    /* ── Footer ── */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 1.5rem;
+      color: var(--lilla-light);
+      font-size: 0.82rem;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 500px) {
+      .code-inputs input { width: 48px; height: 56px; font-size: 1.5rem; }
+      .games-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
 <body>
+
+  <!-- Particelle -->
+  <div id="particles"></div>
+
+  <!-- Header -->
+  <header>
+    <p class="title-eyebrow">✦ Solo per te Amore Mio ✦</p>
+    <h1>La tua<br><em>avventura speciale</em></h1>
+    <p class="subtitle">Quattro sfide ti aspettano. Superale tutte, scopri le cifre e scopri il tuo premio segreto. 🤍</p>
+    <div class="heart-divider">♡ ★ ♡</div>
+  </header>
+
+  <!-- Progress -->
+  <div class="progress-section">
+    <p class="progress-label">I Tuoi Progressi</p>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+
+  <!-- Giochi -->
+  <section class="games-section">
+    <div class="games-grid">
+
+      <a class="game-card" href="gioco1.html" id="card1">
+        <span class="card-icon">📝</span>
+        <span class="card-number">Gioco 1</span>
+        <span class="card-title">Cruciverba<br></span>
+        <span class="card-desc">Parole che parlano di noi due</span>
+        <span class="card-status" id="status1">Inizia →</span>
+      </a>
+
+      <a class="game-card" href="gioco2.html" id="card2">
+        <span class="card-icon">❓</span>
+        <span class="card-number">Gioco 2</span>
+        <span class="card-title">Wordle</span>
+        <span class="card-desc">Ricomponi una parola speciale</span>
+        <span class="card-status" id="status2">Inizia →</span>
+      </a>
+
+      <a class="game-card" href="gioco3.html" id="card3">
+        <span class="card-icon">🎴</span>
+        <span class="card-number">Gioco 3</span>
+        <span class="card-title">Memory</span>
+        <span class="card-desc">Trova tutte le coppie del nostro mondo</span>
+        <span class="card-status" id="status3">Inizia →</span>
+      </a>
+
+      <a class="game-card" href="gioco4.html" id="card4">
+        <span class="card-icon">💬</span>
+        <span class="card-number">Gioco 4</span>
+        <span class="card-title">Quiz su di me</span>
+        <span class="card-desc">Quanto mi conosci davvero?</span>
+        <span class="card-status" id="status4">Inizia →</span>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- Codice segreto -->
+  <section class="code-section">
+    <div class="code-box">
+      <h2>✦ Codice Segreto ✦</h2>
+      <p>Inserisci le 4 cifre che ti ho dato dopo ogni gioco<br>per sbloccare la tua sorpresa 🔐</p>
+      <div class="code-inputs">
+        <div class="code-group">
+          <label>Gioco 1</label>
+          <input type="text" inputmode="numeric" maxlength="1" id="d1" placeholder="·">
+        </div>
+        <div class="code-group">
+          <label>Gioco 2</label>
+          <input type="text" inputmode="numeric" maxlength="1" id="d2" placeholder="·">
+        </div>
+        <div class="code-group">
+          <label>Gioco 3</label>
+          <input type="text" inputmode="numeric" maxlength="1" id="d3" placeholder="·">
+        </div>
+        <div class="code-group">
+          <label>Gioco 4</label>
+          <input type="text" inputmode="numeric" maxlength="1" id="d4" placeholder="·">
+        </div>
+      </div>
+      <button class="btn-primary" onclick="checkCode()">
+        <span>Apri la sorpresa</span><span>🤍</span>
+      </button>
+      <p class="code-error" id="codeError">❌ Codice sbagliato, riprova!</p>
+      
+    </div>
+  </section>
+
+  <footer>
+    Fatto con tutto il mio amore solo per te principessa ♡
+  </footer>
+
+  <script>
+    // ── Codice segreto — cambia questo con il tuo codice reale ──
+    const SECRET = '2706'; // ← MODIFICA QUI con le 4 cifre che vuoi
+
+    // ── Auto-avanzamento input ──
+    document.querySelectorAll('.code-inputs input').forEach((inp, i, arr) => {
+      inp.addEventListener('input', () => {
+        inp.value = inp.value.replace(/\D/g, '');
+        if (inp.value && i < arr.length - 1) arr[i + 1].focus();
+      });
+      inp.addEventListener('keydown', e => {
+        if (e.key === 'Backspace' && !inp.value && i > 0) arr[i - 1].focus();
+      });
+    });
+
+    function checkCode() {
+      const code = ['d1','d2','d3','d4'].map(id => document.getElementById(id).value).join('');
+      const err = document.getElementById('codeError');
+      if (code === SECRET) {
+        window.location.href = 'premio.html';
+      } else {
+        err.classList.add('show');
+        document.querySelectorAll('.code-inputs input').forEach(i => {
+          i.style.borderColor = '#c0392b';
+          setTimeout(() => i.style.borderColor = '', 1200);
+        });
+        setTimeout(() => err.classList.remove('show'), 3000);
+      }
+    }
+
+    // ── Stato completamento (salvato in localStorage) ──
+    function updateProgress() {
+      let done = 0;
+      [1,2,3,4].forEach(n => {
+        if (localStorage.getItem('game'+n+'_done') === 'true') {
+          document.getElementById('card'+n).classList.add('completed');
+          document.getElementById('status'+n).textContent = '✓ Completato';
+          done++;
+        }
+      });
+      document.getElementById('progressFill').style.width = (done / 4 * 100) + '%';
+    }
+    updateProgress();
+
+    // ── Particelle ──
+    const symbols = ['♡','★','✦','♡','☆','✿','♡','★'];
+    const container = document.getElementById('particles');
+    for (let i = 0; i < 22; i++) {
+      const el = document.createElement('div');
+      el.className = 'particle';
+      el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+      el.style.cssText = `
+        left: ${Math.random() * 100}%;
+        font-size: ${0.7 + Math.random() * 1.1}rem;
+        color: ${ Math.random() > 0.5 ? '#C3A8E0' : '#9B7EC8' };
+        animation-duration: ${8 + Math.random() * 14}s;
+        animation-delay: ${Math.random() * 10}s;
+        opacity: 0;
+      `;
+      container.appendChild(el);
+    }
+  </script>
 </body>
 </html>
