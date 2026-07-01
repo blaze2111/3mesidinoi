@@ -162,8 +162,8 @@
 
   <div class="game-header">
     <p class="eyebrow">✦ Gioco 4 ✦</p>
-    <h1>Quiz<br><em>su di Noi</em></h1>
-    <p>Quanto conosci la nostra storia? 🤍<br>8 domande per mettere alla prova la tua memoria.</p>
+    <h1>Quiz<br><em>su di ME</em></h1>
+    <p>Quanto mi conosci? 🤍<br>8 domande per mettere alla prova la tua memoria.</p>
   </div>
 
   <div class="quiz-wrap">
@@ -199,52 +199,52 @@
     // ══════════════════════════════════════════════════════════════════════
     const QUESTIONS = [
       {
-        q: "Dove ci siamo incontrati per la prima volta?",
-        opts: ["A una festa", "A scuola / lavoro", "Online", "Per caso per strada"],
+        q: "Qual'è il mio colore preferito?",
+        opts: ["Nero", "Rosso", "Verde", "Blu"],
         correct: 0, // ← cambia con l'indice giusto (0, 1, 2 o 3)
-        explain: "Cambia questa spiegazione con qualcosa di carino sul vostro primo incontro! 🤍"
+        explain: "Prima era il rosso ma ultimamente è il nero "
       },
       {
-        q: "Qual è il nostro film preferito da guardare insieme?",
-        opts: ["Film A", "Film B", "Film C", "Film D"],
+        q: "Qual è a parer mio il miglior film mai visto insieme?",
+        opts: ["Damsel", "Obsession", "Toy Story 5", "Super Mario 2"],
         correct: 1,
-        explain: "Cambia le opzioni con i vostri film veri!"
+        explain: "Dai su era facile!"
       },
       {
-        q: "Qual è il cibo che ordino quasi sempre quando usciamo?",
-        opts: ["Pizza", "Sushi", "Pasta", "Hamburger"],
+        q: "Che tipo di birra non mi piace?",
+        opts: ["Tennent's", "Ichnusa", "Peroni", "Heineken"],
         correct: 2,
-        explain: "Questo puoi personalizzarlo con il tuo cibo preferito reale!"
+        explain: "Sa di piscio"
       },
       {
-        q: "In quale mese è il mio compleanno?",
-        opts: ["Gennaio", "Marzo", "Giugno", "Settembre"],
+        q: "Che segno zodiacale sono?",
+        opts: ["Scorpione", "Acquario", "Sagittario", "Pesci"],
         correct: 0,
-        explain: "Sostituisci con il tuo mese vero!"
+        explain: "Fun Fact: fossi nato il giorno dopo sarei stato sagittario"
       },
       {
-        q: "Qual è la nostra canzone?",
-        opts: ["Canzone A", "Canzone B", "Canzone C", "Canzone D"],
+        q: "Al nostro primo appuntamento, a chi ho ho dato 2 euro?",
+        opts: ["Arianna", "Carola", "Giulia", "Clarissa"],
         correct: 3,
-        explain: "Metti qui la vostra canzone del cuore!"
+        explain: "Poveri i miei 2 euro 🥲"
       },
       {
-        q: "Qual è il mio animale preferito?",
-        opts: ["Gatto", "Cane", "Coniglio", "Volpe"],
+        q: "Prima dell'attraversaspecchi quale saga ho letto?",
+        opts: ["Grishaverse", "Percy Jackson", "Red Rising", "Fourth Wing"],
         correct: 0,
-        explain: "Personalizza questa domanda!"
+        explain: "M E R A V I G L I O S A"
       },
       {
-        q: "Quante volte al giorno ti scrivo in media?",
-        opts: ["1-5 volte", "6-10 volte", "11-20 volte", "Infinitamente"],
+        q: "Che facoltà ho scelto all'università?",
+        opts: ["Sistemi e Reti", "Ingegneria Informatica", "Elettronica", "Informatica"],
         correct: 3,
-        explain: "Perché ti penso sempre! 🤍"
+        explain: "Palese finirò fuori corso ma vabbè"
       },
       {
-        q: "Cosa faccio quando sono nervoso/a?",
-        opts: ["Faccio passeggiate", "Mangio tantissimo", "Guardo serie TV", "Ascolto musica"],
+        q: "Qual'è stato il tuo primo messaggio su ig?",
+        opts: ["oii grazie per stasera", "Mi sono diveritita stasera", "Ei comunque grazie per la compagnia di stasera", "Coglione scoppia"],
         correct: 2,
-        explain: "Personalizza anche questa con qualcosa di vero!"
+        explain: "Già mi avevi conquistato 🤍"
       },
     ];
     // ══════════════════════════════════════════════════════════════════════
@@ -305,7 +305,7 @@
       } else {
         btn.classList.add('wrong');
         allBtns[q.correct].classList.add('correct');
-        document.getElementById('feedback').textContent = '✗ Non proprio… ma ci sta!';
+        document.getElementById('feedback').textContent = '✗ Aia male male eh amore';
         document.getElementById('feedback').className = 'feedback-row wrong';
       }
 
@@ -342,10 +342,10 @@
         msg = 'Mi conosci alla perfezione — ti amo tantissimo! 🤍';
       } else if (pct >= 75) {
         emoji = '⭐'; title = 'Ottimo risultato!';
-        msg = 'Conosci bene la nostra storia — mi fai sentire speciale 🤍';
+        msg = 'Mi conosci bene — mi fai sentire speciale 🤍';
       } else if (pct >= 50) {
-        emoji = '🤍'; title = 'Buona prova!';
-        msg = 'Abbiamo ancora tante cose da scoprire insieme! 🤍';
+        emoji = '🤍'; title = 'Bel Tentativo!';
+        msg = 'Poteva andare peggio amore 🤍';
       } else {
         emoji = '🌸'; title = 'C\'è ancora da imparare!';
         msg = 'Non importa — l\'importante è stare insieme! 🤍';

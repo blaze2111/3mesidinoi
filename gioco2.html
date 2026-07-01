@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gioco 2 — Il Nostro Puzzle 🤍</title>
+  <title>Gioco 2 — Wordle del Cuore 🤍</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -16,14 +16,30 @@
       --text-dark: #3D2B5E;
       --text-mid: #6B4E8A;
       --shadow: rgba(123, 94, 167, 0.2);
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Nunito', sans-serif; background: var(--lilla-bg); min-height: 100vh; }
 
+      --green:  #538D4E;
+      --yellow: #B59F3B;
+      --gray:   #3A3A3C;
+      --tile-empty: #ffffff;
+      --tile-border-empty: #d3bfee;
+      --tile-border-filled: #9B7EC8;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--lilla-bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Nav ── */
     nav {
       display: flex; align-items: center; gap: 1rem;
-      padding: 1.2rem 2rem; background: var(--white);
+      padding: 1rem 1.5rem; background: var(--white);
       box-shadow: 0 2px 16px var(--shadow);
+      flex-shrink: 0;
     }
     nav a { font-size: 0.85rem; color: var(--lilla-mid); text-decoration: none; font-weight: 600; }
     nav a:hover { color: var(--lilla-deep); }
@@ -33,105 +49,217 @@
       font-size: 0.75rem; font-weight: 700;
     }
 
-    .game-header { text-align: center; padding: 2rem 1.5rem 1rem; }
-    .game-header .eyebrow { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--lilla-mid); margin-bottom: 0.5rem; }
-    .game-header h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem,5vw,2.8rem); color: var(--text-dark); }
+    /* ── Header ── */
+    .game-header {
+      text-align: center;
+      padding: 1.4rem 1.5rem 0.6rem;
+    }
+    .eyebrow {
+      font-size: 0.78rem; font-weight: 700; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--lilla-mid); margin-bottom: 0.4rem;
+    }
+    .game-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 5vw, 2.4rem);
+      color: var(--text-dark);
+    }
     .game-header h1 em { font-style: italic; color: var(--lilla-deep); }
-    .game-header p { margin-top: 0.6rem; font-size: 0.92rem; color: var(--text-mid); line-height: 1.6; }
-
-    /* ── Info bar ── */
-    .info-bar {
-      display: flex; justify-content: space-between; align-items: center;
-      background: var(--white); border-radius: 14px; padding: 0.7rem 1.4rem;
-      margin: 0 auto 1rem; max-width: 520px; width: calc(100% - 3rem);
-      box-shadow: 0 2px 12px var(--shadow);
-    }
-    .info-item { text-align: center; }
-    .info-item .val { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--lilla-deep); }
-    .info-item .lbl { font-size: 0.68rem; color: var(--text-mid); font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
-
-    /* ── Area puzzle ── */
-    .puzzle-area {
-      max-width: 560px;
-      margin: 0 auto;
-      padding: 0 1rem;
+    .game-header p {
+      margin-top: 0.3rem; font-size: 0.85rem;
+      color: var(--text-mid); line-height: 1.5;
     }
 
-    /* Canvas container */
-    .canvas-wrap {
-      background: var(--white);
-      border-radius: 20px;
-      box-shadow: 0 4px 28px var(--shadow);
-      border: 2px solid var(--lilla-pale);
-      overflow: hidden;
+    /* ── Toast messaggio ── */
+    #toast {
+      position: fixed;
+      top: 80px; left: 50%; transform: translateX(-50%);
+      background: var(--text-dark);
+      color: white;
+      padding: 0.65rem 1.4rem;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+      z-index: 100;
+      white-space: nowrap;
+    }
+    #toast.show { opacity: 1; }
+
+    /* ── Griglia ── */
+    #board-wrap {
+      display: flex;
+      justify-content: center;
+      padding: 0.8rem 1rem;
+    }
+    #board {
+      display: grid;
+      grid-template-rows: repeat(6, 1fr);
+      gap: 5px;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 5px;
+    }
+    .tile {
+      width: clamp(44px, 13vw, 58px);
+      height: clamp(44px, 13vw, 58px);
+      border: 2px solid var(--tile-border-empty);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Nunito', sans-serif;
+      font-size: clamp(1.2rem, 4vw, 1.6rem);
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--text-dark);
+      background: var(--tile-empty);
+      transition: border-color 0.1s;
       position: relative;
-      touch-action: none;
+      user-select: none;
     }
-    canvas {
-      display: block;
-      width: 100%;
-      height: auto;
-      cursor: grab;
+    /* lettera inserita ma non ancora confermata */
+    .tile.filled {
+      border-color: var(--tile-border-filled);
+      animation: pop 0.1s ease;
     }
-    canvas:active { cursor: grabbing; }
+    @keyframes pop {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.12); }
+      100% { transform: scale(1); }
+    }
 
-    /* ── Anteprima ── */
-    .preview-toggle {
-      text-align: center;
-      margin: 0.8rem 0;
+    /* rivelazione con flip */
+    .tile.reveal {
+      animation: flip 0.5s ease forwards;
     }
-    .preview-panel {
+    @keyframes flip {
+      0%   { transform: rotateX(0deg); }
+      49%  { transform: rotateX(-90deg); }
+      50%  { transform: rotateX(-90deg); background: var(--flip-color); border-color: var(--flip-color); color: white; }
+      100% { transform: rotateX(0deg);  background: var(--flip-color); border-color: var(--flip-color); color: white; }
+    }
+
+    /* stati finali */
+    .tile.correct  { background: var(--green);  border-color: var(--green);  color: white; }
+    .tile.present  { background: var(--yellow); border-color: var(--yellow); color: white; }
+    .tile.absent   { background: var(--gray);   border-color: var(--gray);   color: white; }
+
+    /* shake riga sbagliata */
+    .row.shake {
+      animation: shake 0.5s ease;
+    }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%     { transform: translateX(-6px); }
+      40%     { transform: translateX(6px); }
+      60%     { transform: translateX(-4px); }
+      80%     { transform: translateX(4px); }
+    }
+
+    /* bounce riga vinta */
+    .tile.bounce {
+      animation: bounce 0.6s ease forwards;
+    }
+    @keyframes bounce {
+      0%,100% { transform: translateY(0); }
+      40%     { transform: translateY(-20px); }
+      60%     { transform: translateY(-10px); }
+    }
+
+    /* ── Tastiera ── */
+    #keyboard {
+      padding: 0 0.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: center;
+    }
+    .kb-row {
+      display: flex;
+      gap: 5px;
+      justify-content: center;
+    }
+    .key {
+      height: clamp(50px, 12vw, 58px);
+      min-width: clamp(28px, 8vw, 40px);
+      padding: 0 0.3rem;
+      border-radius: 6px;
+      border: none;
+      background: var(--lilla-light);
+      color: var(--text-dark);
+      font-family: 'Nunito', sans-serif;
+      font-size: clamp(0.72rem, 2.5vw, 0.9rem);
+      font-weight: 800;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .key.wide { min-width: clamp(48px, 12vw, 64px); font-size: clamp(0.6rem, 2vw, 0.75rem); }
+    .key:active { opacity: 0.8; }
+
+    .key.correct { background: var(--green);  color: white; }
+    .key.present { background: var(--yellow); color: white; }
+    .key.absent  { background: var(--gray);   color: white; }
+
+    /* ── Pannello risultato ── */
+    #result-panel {
       display: none;
-      background: var(--white);
-      border-radius: 14px;
-      padding: 0.8rem;
-      box-shadow: 0 2px 12px var(--shadow);
-      margin-bottom: 0.8rem;
+      max-width: 380px;
+      margin: 0.5rem auto 1rem;
+      padding: 0 1.2rem;
       text-align: center;
     }
-    .preview-panel.show { display: block; }
-    .preview-panel p { font-size: 0.78rem; color: var(--text-mid); margin-bottom: 0.5rem; }
-    .preview-panel img {
-      max-width: 140px;
-      border-radius: 8px;
+    #result-panel.show { display: block; }
+    .result-box {
+      background: var(--white);
+      border-radius: 18px;
+      padding: 1.6rem 1.4rem;
+      box-shadow: 0 4px 24px var(--shadow);
       border: 2px solid var(--lilla-pale);
     }
-
-    /* ── Bottoni ── */
-    .puzzle-actions {
-      display: flex; gap: 0.7rem; justify-content: center; margin: 0.8rem 0 1.5rem;
-      flex-wrap: wrap;
+    .result-box .big { font-size: 2.2rem; margin-bottom: 0.4rem; }
+    .result-box h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem; color: var(--text-dark); margin-bottom: 0.3rem;
     }
-    .btn-secondary {
-      background: var(--white); border: 2px solid var(--lilla-light);
-      border-radius: 999px; padding: 0.6rem 1.3rem;
-      font-family: 'Nunito', sans-serif; font-size: 0.88rem; font-weight: 700;
-      color: var(--lilla-deep); cursor: pointer;
-      transition: background 0.2s, border-color 0.2s;
+    .result-box p { font-size: 0.88rem; color: var(--text-mid); line-height: 1.55; margin-bottom: 1rem; }
+    .word-reveal {
+      display: inline-block;
+      background: var(--lilla-pale);
+      border-radius: 10px;
+      padding: 0.4rem 1.2rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--lilla-deep);
+      letter-spacing: 0.15em;
+      margin-bottom: 1rem;
     }
-    .btn-secondary:hover { background: var(--lilla-pale); border-color: var(--lilla-mid); }
-
-    /* ── Completamento ── */
-    .complete-section { max-width: 520px; margin: 0 auto 3rem; padding: 0 1.5rem; }
-    .complete-box {
-      background: var(--white); border-radius: 20px; padding: 2rem;
-      box-shadow: 0 4px 24px var(--shadow); border: 2px solid var(--lilla-pale);
-      text-align: center; display: none;
-    }
-    .complete-box.show { display: block; }
-    .complete-box h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--text-dark); margin-bottom: 0.5rem; }
-    .complete-box p { font-size: 0.9rem; color: var(--text-mid); margin-bottom: 1.4rem; line-height: 1.6; }
-    .confetti-row { font-size: 1.8rem; margin-bottom: 0.8rem; letter-spacing: 0.3em; }
-    .btn-complete {
-      display: inline-flex; align-items: center; gap: 0.5rem;
+    .btn-row { display: flex; gap: 0.7rem; justify-content: center; flex-wrap: wrap; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 0.4rem;
       background: linear-gradient(135deg, var(--lilla-mid), var(--lilla-deep));
       color: white; border: none; border-radius: 999px;
-      padding: 0.85rem 2rem; font-family: 'Nunito', sans-serif;
-      font-size: 1rem; font-weight: 700; cursor: pointer;
+      padding: 0.75rem 1.6rem; font-family: 'Nunito', sans-serif;
+      font-size: 0.92rem; font-weight: 700; cursor: pointer;
       transition: transform 0.2s, box-shadow 0.2s;
-      box-shadow: 0 4px 16px rgba(123,94,167,0.35);
+      box-shadow: 0 4px 14px rgba(123,94,167,0.35);
     }
-    .btn-complete:hover { transform: translateY(-2px); }
+    .btn-primary:hover { transform: translateY(-2px); }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: var(--white); border: 2px solid var(--lilla-light);
+      border-radius: 999px; padding: 0.7rem 1.4rem;
+      font-family: 'Nunito', sans-serif; font-size: 0.92rem; font-weight: 700;
+      color: var(--lilla-deep); cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-secondary:hover { background: var(--lilla-pale); }
   </style>
 </head>
 <body>
@@ -139,406 +267,296 @@
 <nav>
   <a href="index.html">← Torna alla mappa</a>
   <span style="flex:1"></span>
-  <span class="nav-badge">🧩 Gioco 2 di 4</span>
+  <span class="nav-badge">🟩 Gioco 2 di 4</span>
 </nav>
 
 <div class="game-header">
   <p class="eyebrow">✦ Gioco 2 ✦</p>
-  <h1>Il Nostro<br><em>Puzzle</em></h1>
-  <p>Ricomponi la nostra foto! Trascina i pezzi al posto giusto 🤍<br>I pezzi scattano in posizione quando sono vicini.</p>
+  <h1>Wordle<br><em>del Cuore</em></h1>
+  <p>Indovina la parola di 6 lettere in 6 tentativi 🤍<br>
+     🟩 posto giusto &nbsp;·&nbsp; 🟨 lettera c'è, posto sbagliato &nbsp;·&nbsp; ⬜ lettera assente</p>
 </div>
 
-<div class="info-bar">
-  <div class="info-item">
-    <div class="val" id="placedCount">0/36</div>
-    <div class="lbl">Pezzi</div>
-  </div>
-  <div class="info-item">
-    <div class="val" id="timer">0:00</div>
-    <div class="lbl">Tempo</div>
-  </div>
-  <div class="info-item">
-    <div class="val" id="statusIcon">🧩</div>
-    <div class="lbl">Stato</div>
-  </div>
+<div id="toast"></div>
+
+<div id="board-wrap">
+  <div id="board"></div>
 </div>
 
-<div class="puzzle-area">
-  <div class="canvas-wrap">
-    <canvas id="puzzleCanvas"></canvas>
-  </div>
-
-  <div class="preview-toggle">
-    <button class="btn-secondary" onclick="togglePreview()">👁 Vedi foto originale</button>
-  </div>
-  <div class="preview-panel" id="previewPanel">
-    <p>Foto da ricomporre:</p>
-    <img id="previewImg" src="" alt="Anteprima">
-  </div>
-
-  <div class="puzzle-actions">
-    <button class="btn-secondary" onclick="shufflePuzzle()">🔀 Rimescola</button>
+<div id="result-panel">
+  <div class="result-box">
+    <div class="big" id="result-emoji">🎉</div>
+    <h2 id="result-title"></h2>
+    <p id="result-msg"></p>
+    <div class="word-reveal" id="word-reveal"></div>
+    <div class="btn-row">
+      <button class="btn-primary" onclick="markDone()">Torna alla mappa 🤍</button>
+      <button class="btn-secondary" onclick="resetGame()">🔄 Riprova</button>
+    </div>
   </div>
 </div>
 
-<div class="complete-section">
-  <div class="complete-box" id="completeBox">
-    <div class="confetti-row">🌟🤍🎉</div>
-    <h2>Puzzle completato!</h2>
-    <p>Bravissima! Hai ricomposto il nostro ricordo speciale 🤍<br>Torna alla mappa: ti darò la seconda cifra del codice!</p>
-    <button class="btn-complete" onclick="markDone()">Torna alla mappa 🤍</button>
-  </div>
-</div>
+<div id="keyboard"></div>
 
 <script>
-// ══════════════════════════════════════════════════════════
-//  PERSONALIZZAZIONE
-//  Metti la tua foto nella stessa cartella dell'HTML
-//  e scrivi qui il nome del file (es. "foto.png")
-// ══════════════════════════════════════════════════════════
-const IMAGE_SRC = 'noi.jpeg'; // ← CAMBIA QUI con il nome della tua foto
-const COLS = 6;
-const ROWS = 6;
-const SNAP_DIST = 18; // distanza in px entro cui scatta il pezzo
 // ══════════════════════════════════════════
-const canvas = document.getElementById('puzzleCanvas');
-const ctx = canvas.getContext('2d');
-const img = new Image();
+//  CONFIGURAZIONE
+// ══════════════════════════════════════════
+const SECRET = 'SENECA';   // parola segreta (uppercase)
+const WORD_LEN = SECRET.length; // 6
+const MAX_TRIES = 6;
+// ══════════════════════════════════════════
 
-let pieces = [];
-let dragging = null;
-let dragOffX = 0, dragOffY = 0;
-let placed = 0;
-let seconds = 0;
-let timerInterval = null;
-let started = false;
-let pieceW, pieceH;
-let canvasW, canvasH;
-let TAB = 0; // dimensione "orecchietta" del puzzle
+const KEYBOARD_ROWS = [
+  ['Q','W','E','R','T','Y','U','I','O','P'],
+  ['A','S','D','F','G','H','J','K','L'],
+  ['INVIO','Z','X','C','V','B','N','M','⌫']
+];
 
-img.onload = () => {
-  document.getElementById('previewImg').src = IMAGE_SRC;
-  initPuzzle();
-};
-img.onerror = () => {
-  // Fallback: disegna un gradiente lilla se la foto non c'è
-  const offscreen = document.createElement('canvas');
-  offscreen.width = 600; offscreen.height = 600;
-  const oc = offscreen.getContext('2d');
-  const grad = oc.createLinearGradient(0,0,600,600);
-  grad.addColorStop(0,'#C3A8E0');
-  grad.addColorStop(1,'#7B5EA7');
-  oc.fillStyle = grad;
-  oc.fillRect(0,0,600,600);
-  oc.fillStyle = 'white';
-  oc.font = 'bold 28px Nunito, sans-serif';
-  oc.textAlign = 'center';
-  oc.fillText('Metti qui la tua foto!', 300, 280);
-  oc.font = '18px Nunito, sans-serif';
-  oc.fillText('(rinomina il file in foto.jpg)', 300, 320);
-  img.src = offscreen.toDataURL();
-};
-img.src = IMAGE_SRC;
+let currentRow = 0;
+let currentCol = 0;
+let currentGuess = [];
+let gameOver = false;
+let tileEls = []; // tileEls[row][col]
+let keyEls = {};  // keyEls['A'] = button element
 
-function initPuzzle() {
-  // Calcola dimensioni responsive
-  const maxW = Math.min(canvas.parentElement.clientWidth, 540);
-  canvasW = maxW;
-  canvasH = maxW; // quadrato
-  canvas.width = canvasW;
-  canvas.height = canvasH;
+// ── Build board ──
+function buildBoard() {
+  const board = document.getElementById('board');
+  board.innerHTML = '';
+  tileEls = [];
+  for (let r = 0; r < MAX_TRIES; r++) {
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.id = 'row-' + r;
+    const rowTiles = [];
+    for (let c = 0; c < WORD_LEN; c++) {
+      const tile = document.createElement('div');
+      tile.className = 'tile';
+      tile.id = `tile-${r}-${c}`;
+      row.appendChild(tile);
+      rowTiles.push(tile);
+    }
+    board.appendChild(row);
+    tileEls.push(rowTiles);
+  }
+}
 
-  pieceW = Math.floor(canvasW / COLS);
-  pieceH = Math.floor(canvasH / ROWS);
-  TAB = Math.floor(Math.min(pieceW, pieceH) * 0.28);
-  pieceCache.clear();
+// ── Build keyboard ──
+function buildKeyboard() {
+  const kb = document.getElementById('keyboard');
+  kb.innerHTML = '';
+  keyEls = {};
+  KEYBOARD_ROWS.forEach(keys => {
+    const row = document.createElement('div');
+    row.className = 'kb-row';
+    keys.forEach(k => {
+      const btn = document.createElement('button');
+      btn.className = 'key' + (k.length > 1 ? ' wide' : '');
+      btn.textContent = k;
+      btn.dataset.key = k;
+      btn.addEventListener('click', () => handleKey(k));
+      row.appendChild(btn);
+      if (k.length === 1) keyEls[k] = btn;
+    });
+    kb.appendChild(row);
+  });
+}
 
-  pieces = [];
-  placed = 0;
-  seconds = 0; started = false;
-  clearInterval(timerInterval);
-  document.getElementById('placedCount').textContent = '0/' + (COLS*ROWS);
-  document.getElementById('timer').textContent = '0:00';
-  document.getElementById('statusIcon').textContent = '🧩';
-  document.getElementById('completeBox').classList.remove('show');
+// ── Input ──
+document.addEventListener('keydown', e => {
+  if (gameOver) return;
+  if (e.key === 'Enter') { handleKey('INVIO'); return; }
+  if (e.key === 'Backspace') { handleKey('⌫'); return; }
+  const letter = e.key.toUpperCase();
+  if (/^[A-Z]$/.test(letter)) handleKey(letter);
+});
 
-  // Crea i pezzi
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
-      // Connectors: 1 = tab uscente, -1 = tab rientrante, 0 = bordo piatto
-      const top    = r === 0        ? 0 : pieces[(r-1)*COLS + c].bottom * -1;
-      const left   = c === 0        ? 0 : pieces[r*COLS + (c-1)].right  * -1;
-      const bottom = r === ROWS - 1 ? 0 : (Math.random() > 0.5 ? 1 : -1);
-      const right  = c === COLS - 1 ? 0 : (Math.random() > 0.5 ? 1 : -1);
+function handleKey(key) {
+  if (gameOver) return;
 
-      pieces.push({
-        id: r * COLS + c,
-        col: c, row: r,
-        // posizione corrente (random sullo schermo)
-        x: Math.random() * (canvasW - pieceW - TAB*2) + TAB,
-        y: Math.random() * (canvasH - pieceH - TAB*2) + TAB,
-        // posizione target
-        targetX: c * pieceW,
-        targetY: r * pieceH,
-        top, right, bottom, left,
-        snapped: false
-      });
+  if (key === '⌫') {
+    deleteLetter();
+  } else if (key === 'INVIO') {
+    submitGuess();
+  } else if (/^[A-Z]$/.test(key) && currentCol < WORD_LEN) {
+    addLetter(key);
+  }
+}
+
+function addLetter(letter) {
+  if (currentCol >= WORD_LEN) return;
+  const tile = tileEls[currentRow][currentCol];
+  tile.textContent = letter;
+  tile.classList.add('filled');
+  currentGuess.push(letter);
+  currentCol++;
+}
+
+function deleteLetter() {
+  if (currentCol === 0) return;
+  currentCol--;
+  currentGuess.pop();
+  const tile = tileEls[currentRow][currentCol];
+  tile.textContent = '';
+  tile.classList.remove('filled');
+}
+
+// ── Calcolo risultato (gestisce lettere duplicate correttamente) ──
+function evaluateGuess(guess) {
+  // result: 'correct' | 'present' | 'absent'
+  const result = Array(WORD_LEN).fill('absent');
+  const secretArr = SECRET.split('');
+  const guessArr  = guess.split('');
+
+  // Primo passaggio: segna i verdi (correct)
+  const secretUsed = Array(WORD_LEN).fill(false);
+  const guessUsed  = Array(WORD_LEN).fill(false);
+  for (let i = 0; i < WORD_LEN; i++) {
+    if (guessArr[i] === secretArr[i]) {
+      result[i] = 'correct';
+      secretUsed[i] = true;
+      guessUsed[i]  = true;
     }
   }
 
-  // Mescola le posizioni
-  shufflePositions();
-  draw();
-}
-
-function shufflePositions() {
-  // Disponi i pezzi in modo che non siano sovrapposti — griglia casuale
-  const slots = [];
-  const cols2 = COLS + 1, rows2 = ROWS + 1;
-  for (let r = 0; r < rows2; r++)
-    for (let c = 0; c < cols2; c++)
-      slots.push({ x: c * (canvasW / cols2), y: r * (canvasH / rows2) });
-
-  // Shuffle slots
-  for (let i = slots.length-1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i+1));
-    [slots[i], slots[j]] = [slots[j], slots[i]];
+  // Secondo passaggio: segna i gialli (present)
+  for (let i = 0; i < WORD_LEN; i++) {
+    if (guessUsed[i]) continue;
+    for (let j = 0; j < WORD_LEN; j++) {
+      if (secretUsed[j]) continue;
+      if (guessArr[i] === secretArr[j]) {
+        result[i] = 'present';
+        secretUsed[j] = true;
+        break;
+      }
+    }
   }
 
-  pieces.forEach((p, i) => {
-    if (!p.snapped) {
-      const s = slots[i % slots.length];
-      p.x = Math.max(TAB, Math.min(canvasW - pieceW - TAB, s.x + (Math.random()-0.5)*20));
-      p.y = Math.max(TAB, Math.min(canvasH - pieceH - TAB, s.y + (Math.random()-0.5)*20));
+  return result;
+}
+
+// ── Submit ──
+function submitGuess() {
+  if (currentCol < WORD_LEN) {
+    shakeRow(currentRow);
+    showToast('Parola troppo corta!');
+    return;
+  }
+
+  const guess = currentGuess.join('');
+  const result = evaluateGuess(guess);
+
+  revealRow(currentRow, guess, result, () => {
+    // Aggiorna tastiera
+    updateKeyboard(guess, result);
+
+    const won = result.every(r => r === 'correct');
+    if (won) {
+      bounceRow(currentRow);
+      setTimeout(() => showResult(true, currentRow + 1), 400);
+      gameOver = true;
+      localStorage.setItem('game2_done', 'true');
+    } else if (currentRow === MAX_TRIES - 1) {
+      setTimeout(() => showResult(false), 300);
+      gameOver = true;
+    } else {
+      currentRow++;
+      currentCol = 0;
+      currentGuess = [];
     }
   });
 }
 
-// ── Disegno ──
-function draw() {
-  ctx.clearRect(0, 0, canvasW, canvasH);
+// ── Animazione flip ──
+function revealRow(row, guess, result, onDone) {
+  const DELAY = 300; // ms tra un tile e l'altro
+  result.forEach((state, col) => {
+    const tile = tileEls[row][col];
+    setTimeout(() => {
+      // imposta il colore prima del flip (visibile nella seconda metà)
+      const colorMap = { correct: 'var(--green)', present: 'var(--yellow)', absent: 'var(--gray)' };
+      tile.style.setProperty('--flip-color', colorMap[state]);
+      tile.classList.remove('filled');
+      tile.classList.add('reveal');
+      // dopo l'animazione, aggiungi la classe stabile
+      tile.addEventListener('animationend', () => {
+        tile.classList.remove('reveal');
+        tile.classList.add(state);
+      }, { once: true });
+    }, col * DELAY);
+  });
+  setTimeout(onDone, WORD_LEN * DELAY + 100);
+}
 
-  // Griglia guida (posizioni target) — molto leggera
-  ctx.save();
-  ctx.strokeStyle = 'rgba(155,126,200,0.15)';
-  ctx.lineWidth = 1;
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
-      ctx.strokeRect(c*pieceW, r*pieceH, pieceW, pieceH);
+function shakeRow(row) {
+  const rowEl = document.getElementById('row-' + row);
+  rowEl.classList.add('shake');
+  rowEl.addEventListener('animationend', () => rowEl.classList.remove('shake'), { once: true });
+}
+
+function bounceRow(row) {
+  tileEls[row].forEach((tile, i) => {
+    setTimeout(() => tile.classList.add('bounce'), i * 80);
+  });
+}
+
+// ── Tastiera colori ──
+// Priorità: correct > present > absent
+const STATE_PRIORITY = { correct: 3, present: 2, absent: 1 };
+function updateKeyboard(guess, result) {
+  guess.split('').forEach((letter, i) => {
+    const btn = keyEls[letter];
+    if (!btn) return;
+    const currentPrio = STATE_PRIORITY[btn.dataset.state] || 0;
+    const newPrio = STATE_PRIORITY[result[i]];
+    if (newPrio > currentPrio) {
+      // Rimuovi classi precedenti
+      btn.classList.remove('correct', 'present', 'absent');
+      btn.classList.add(result[i]);
+      btn.dataset.state = result[i];
     }
-  }
-  ctx.restore();
-
-  // Disegna prima i pezzi NON trascinati, poi quello trascinato sopra
-  const order = [...pieces].sort((a,b) => (a === dragging ? 1 : b === dragging ? -1 : 0));
-  order.forEach(p => drawPiece(p));
+  });
 }
 
-// Cache degli offscreen canvas per ogni pezzo
-const pieceCache = new Map();
-
-function getPieceCanvas(p) {
-  const key = p.id;
-  if (pieceCache.has(key)) return pieceCache.get(key);
-
-  // Dimensione dell'offscreen: pezzo + TAB su tutti i lati
-  const size = Math.max(pieceW, pieceH) + TAB * 2;
-  const oc = document.createElement('canvas');
-  oc.width  = pieceW + TAB * 2;
-  oc.height = pieceH + TAB * 2;
-  const oc2 = oc.getContext('2d');
-
-  // 1. Disegna la porzione di immagine (riempie tutto l'offscreen)
-  const sx = p.col * (img.naturalWidth  / COLS);
-  const sy = p.row * (img.naturalHeight / ROWS);
-  const sw = img.naturalWidth  / COLS;
-  const sh = img.naturalHeight / ROWS;
-  oc2.drawImage(img, sx, sy, sw, sh, 0, 0, pieceW + TAB*2, pieceH + TAB*2);
-
-  // 2. Taglia con destination-in: tieni solo i pixel dentro la sagoma
-  oc2.globalCompositeOperation = 'destination-in';
-  buildPath(oc2, p, TAB, TAB); // offset TAB perché l'origine è al margine
-  oc2.fill();
-
-  // 3. Disegna il bordo sopra
-  oc2.globalCompositeOperation = 'source-over';
-  oc2.strokeStyle = 'rgba(123,94,167,0.5)';
-  oc2.lineWidth = 1.5;
-  buildPath(oc2, p, TAB, TAB);
-  oc2.stroke();
-
-  pieceCache.set(key, oc);
-  return oc;
+// ── Toast ──
+let toastTimer;
+function showToast(msg, duration = 1600) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), duration);
 }
 
-function drawPiece(p) {
-  const oc = getPieceCanvas(p);
+// ── Risultato finale ──
+function showResult(won, tries) {
+  const panel = document.getElementById('result-panel');
+  const emoji = document.getElementById('result-emoji');
+  const title = document.getElementById('result-title');
+  const msg   = document.getElementById('result-msg');
+  
 
-  ctx.save();
-  if (p === dragging) {
-    ctx.shadowColor = 'rgba(123,94,167,0.5)';
-    ctx.shadowBlur = 16;
-  }
-  // Disegna l'offscreen shiftato di -TAB,-TAB rispetto alla posizione del pezzo
-  ctx.drawImage(oc, p.x - TAB, p.y - TAB);
-
-  // Bordo evidenziato se trascinato
-  if (p === dragging) {
-    ctx.restore();
-    ctx.save();
-    ctx.strokeStyle = 'rgba(123,94,167,0.95)';
-    ctx.lineWidth = 2;
-    buildPath(ctx, p, p.x, p.y);
-    ctx.stroke();
-  }
-  ctx.restore();
-}
-
-// Costruisce il path della sagoma puzzle
-// ox, oy = offset: punto in cui si trova l'angolo top-left del pezzo
-function buildPath(c, p, ox, oy) {
-  const w = pieceW, h = pieceH, t = TAB;
-  c.beginPath();
-  c.moveTo(ox, oy);
-  // TOP
-  edgePath(c, ox, oy, ox+w, oy, p.top, 'h');
-  // RIGHT
-  edgePath(c, ox+w, oy, ox+w, oy+h, p.right, 'v');
-  // BOTTOM (percorso inverso → moltiplica dir per -1)
-  edgePath(c, ox+w, oy+h, ox, oy+h, -p.bottom, 'h');
-  // LEFT (percorso inverso)
-  edgePath(c, ox, oy+h, ox, oy, -p.left, 'v');
-  c.closePath();
-}
-
-// Disegna un lato con eventuale tab/incavo tramite bezier
-// dir: +1 tab uscente verso l'esterno, -1 incavo verso l'interno, 0 piatto
-function edgePath(c, x1, y1, x2, y2, dir, axis) {
-  if (dir === 0) { c.lineTo(x2, y2); return; }
-
-  const t = TAB * dir; // positivo = esce dal rettangolo del pezzo
-
-  if (axis === 'h') {
-    // Lato orizzontale: tab esce in direzione -Y (sopra) o +Y (sotto)
-    // dipende dal segno di t
-    const mx = (x1 + x2) / 2;
-    c.lineTo(mx - TAB * 0.5, y1);
-    c.bezierCurveTo(
-      mx - TAB * 0.5, y1 - t * 0.6,
-      mx - TAB * 0.25, y1 - t,
-      mx,              y1 - t
-    );
-    c.bezierCurveTo(
-      mx + TAB * 0.25, y1 - t,
-      mx + TAB * 0.5,  y1 - t * 0.6,
-      mx + TAB * 0.5,  y1
-    );
-    c.lineTo(x2, y2);
+  if (won) {
+    const messages = [
+      'Al primo colpo? A paracula hai barato 🌟',
+      'Due tentativi, aura! 🌟',
+      'Tre tentativi, poteva piove! 🤍',
+      'Quattro tentativi — così si fa 🤍',
+      'Cinque tentativi — quasi perdevi eh ✨',
+      'Al sesto! Che culo! 🎉',
+    ];
+    emoji.textContent = '🎉';
+    title.textContent = 'Hai indovinato!';
+    msg.textContent = messages[tries - 1] + ' Torna alla mappa per la tua prossima cifra!';
   } else {
-    // Lato verticale: tab esce in direzione -X (sinistra) o +X (destra)
-    const my = (y1 + y2) / 2;
-    c.lineTo(x2, my - TAB * 0.5);
-    c.bezierCurveTo(
-      x2 - t * 0.6,  my - TAB * 0.5,
-      x2 - t,        my - TAB * 0.25,
-      x2 - t,        my
-    );
-    c.bezierCurveTo(
-      x2 - t,        my + TAB * 0.25,
-      x2 - t * 0.6,  my + TAB * 0.5,
-      x2,            my + TAB * 0.5
-    );
-    c.lineTo(x2, y2);
+    emoji.textContent = '🤍';
+    title.textContent = 'CHE BUSTA !';
+    msg.textContent = 'Non preoccuparti amore, puoi riprovare!';
   }
-}
 
-// ── Interazione mouse / touch ──
-function getPos(e) {
-  const rect = canvas.getBoundingClientRect();
-  const scaleX = canvas.width  / rect.width;
-  const scaleY = canvas.height / rect.height;
-  const src = e.touches ? e.touches[0] : e;
-  return {
-    x: (src.clientX - rect.left) * scaleX,
-    y: (src.clientY - rect.top)  * scaleY
-  };
-}
-
-function onDown(e) {
-  e.preventDefault();
-  const {x, y} = getPos(e);
-  // Cerca il pezzo in cima (ordine inverso per prendere quello sopra)
-  for (let i = pieces.length - 1; i >= 0; i--) {
-    const p = pieces[i];
-    if (p.snapped) continue;
-    if (x >= p.x && x <= p.x + pieceW && y >= p.y && y <= p.y + pieceH) {
-      dragging = p;
-      dragOffX = x - p.x;
-      dragOffY = y - p.y;
-      // Porta il pezzo in cima alla lista
-      pieces.splice(i, 1);
-      pieces.push(dragging);
-      if (!started) { startTimer(); started = true; }
-      draw();
-      return;
-    }
-  }
-}
-
-function onMove(e) {
-  e.preventDefault();
-  if (!dragging) return;
-  const {x, y} = getPos(e);
-  dragging.x = x - dragOffX;
-  dragging.y = y - dragOffY;
-  draw();
-}
-
-function onUp(e) {
-  if (!dragging) return;
-  // Controlla snap
-  const tx = dragging.targetX;
-  const ty = dragging.targetY;
-  const dist = Math.hypot(dragging.x - tx, dragging.y - ty);
-  if (dist < SNAP_DIST + pieceW * 0.3) {
-    dragging.x = tx;
-    dragging.y = ty;
-    if (!dragging.snapped) {
-      dragging.snapped = true;
-      placed++;
-      document.getElementById('placedCount').textContent = placed + '/' + (COLS*ROWS);
-      if (placed === COLS * ROWS) handleWin();
-    }
-  }
-  dragging = null;
-  draw();
-}
-
-canvas.addEventListener('mousedown',  onDown);
-canvas.addEventListener('mousemove',  onMove);
-canvas.addEventListener('mouseup',    onUp);
-canvas.addEventListener('touchstart', onDown, { passive: false });
-canvas.addEventListener('touchmove',  onMove, { passive: false });
-canvas.addEventListener('touchend',   onUp,   { passive: false });
-
-// ── Timer ──
-function startTimer() {
-  timerInterval = setInterval(() => {
-    seconds++;
-    const m = Math.floor(seconds/60), s = seconds%60;
-    document.getElementById('timer').textContent = m+':'+(s<10?'0':'')+s;
-  }, 1000);
-}
-
-// ── Win ──
-function handleWin() {
-  clearInterval(timerInterval);
-  document.getElementById('statusIcon').textContent = '🎉';
-  localStorage.setItem('game2_done', 'true');
-  setTimeout(() => {
-    document.getElementById('completeBox').classList.add('show');
-    document.getElementById('completeBox').scrollIntoView({ behavior: 'smooth' });
-  }, 500);
+  panel.classList.add('show');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function markDone() {
@@ -546,31 +564,20 @@ function markDone() {
   window.location.href = 'index.html';
 }
 
-function shufflePuzzle() {
-  pieceCache.clear();
-  pieces.forEach(p => { p.snapped = false; });
-  placed = 0; seconds = 0; started = false;
-  clearInterval(timerInterval);
-  document.getElementById('placedCount').textContent = '0/' + (COLS*ROWS);
-  document.getElementById('timer').textContent = '0:00';
-  document.getElementById('statusIcon').textContent = '🧩';
-  document.getElementById('completeBox').classList.remove('show');
-  shufflePositions();
-  draw();
+function resetGame() {
+  currentRow = 0; currentCol = 0;
+  currentGuess = []; gameOver = false;
+  document.getElementById('result-panel').classList.remove('show');
+  buildBoard();
+  buildKeyboard();
 }
 
-function togglePreview() {
-  document.getElementById('previewPanel').classList.toggle('show');
-}
+// ── Init ──
+buildBoard();
+buildKeyboard();
 
-// Ridimensiona al resize finestra
-window.addEventListener('resize', () => {
-  if (img.complete && img.naturalWidth > 0) initPuzzle();
-});
-
-// Se già completato
 if (localStorage.getItem('game2_done') === 'true') {
-  document.getElementById('completeBox').classList.add('show');
+  // già completato, mostra comunque il gioco ma con bottone torna
 }
 </script>
 </body>
